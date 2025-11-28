@@ -1,0 +1,9 @@
+.env
+
+# node common
+node_modules/
+dist/
+build/
+
+# llm_docs
+llm_docs
