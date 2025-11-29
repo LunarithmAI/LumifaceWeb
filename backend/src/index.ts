@@ -34,11 +34,18 @@ app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok' });
 });
 
-// Analysis endpoint
-app.post('/analyze', upload.single('image'), async (req: Request, res: Response, next: NextFunction) => {
+// Analysis endpoint - accepts up to 3 images
+app.post('/analyze', upload.array('images', 3), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!req.file) {
-      res.status(400).json({ error: 'No image file provided' });
+    const files = req.files as Express.Multer.File[];
+    
+    if (!files || files.length === 0) {
+      res.status(400).json({ error: 'No image files provided' });
+      return;
+    }
+
+    if (files.length > 3) {
+      res.status(400).json({ error: 'Maximum 3 images allowed' });
       return;
     }
 
@@ -47,7 +54,12 @@ app.post('/analyze', upload.single('image'), async (req: Request, res: Response,
       return;
     }
 
-    const result = await analyzeImage(req.file.buffer, req.file.mimetype);
+    const images = files.map(file => ({
+      buffer: file.buffer,
+      mimeType: file.mimetype
+    }));
+
+    const result = await analyzeImage(images);
     res.json(result);
   } catch (error) {
     next(error);

@@ -6,17 +6,20 @@ import { ResultsCharts } from './components/ResultsCharts';
 import { ResultsComments } from './components/ResultsComments';
 import type { AnalysisResult, ApiError } from './types';
 
+interface ImageData {
+  file: File;
+  previewUrl: string;
+}
+
 function App() {
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [images, setImages] = useState<ImageData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleImageSelect = useCallback(
-    (file: File | null, url: string | null) => {
-      setSelectedImage(file);
-      setPreviewUrl(url);
+  const handleImagesChange = useCallback(
+    (newImages: ImageData[]) => {
+      setImages(newImages);
       setResult(null);
       setError(null);
     },
@@ -24,14 +27,16 @@ function App() {
   );
 
   const handleAnalyze = useCallback(async () => {
-    if (!selectedImage) return;
+    if (images.length === 0) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
       const formData = new FormData();
-      formData.append('image', selectedImage);
+      images.forEach((image) => {
+        formData.append('images', image.file);
+      });
 
       const response = await fetch('/analyze', {
         method: 'POST',
@@ -52,7 +57,7 @@ function App() {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedImage]);
+  }, [images]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50">
@@ -72,14 +77,13 @@ function App() {
         {/* Upload Section */}
         <section className="space-y-6">
           <ImageUploader
-            selectedImage={selectedImage}
-            previewUrl={previewUrl}
-            onImageSelect={handleImageSelect}
+            images={images}
+            onImagesChange={handleImagesChange}
           />
 
           <AnalysisControls
             isLoading={isLoading}
-            hasImage={!!selectedImage}
+            hasImage={images.length > 0}
             onAnalyze={handleAnalyze}
           />
         </section>

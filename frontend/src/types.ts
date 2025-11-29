@@ -39,7 +39,8 @@ export interface Features {
 }
 
 export interface TextContent {
-  description: string;
+  description_positive: string;
+  description_negative: string;
   style_tips: string[];
   disclaimer: string;
 }

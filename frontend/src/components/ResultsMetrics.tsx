@@ -70,19 +70,19 @@ export const ResultsMetrics: React.FC<ResultsMetricsProps> = ({
           <MetricCard
             title="Wrinkles"
             value={skin.wrinkles.grade}
-            maxValue={4}
+            maxValue={10}
             reason={skin.wrinkles.reason}
           />
           <MetricCard
             title="Acne"
             value={skin.acne.grade}
-            maxValue={4}
+            maxValue={10}
             reason={skin.acne.reason}
           />
           <MetricCard
             title="Pigmentation"
             value={skin.pigmentation.grade}
-            maxValue={4}
+            maxValue={10}
             reason={skin.pigmentation.reason}
           />
           <MetricCard
@@ -115,7 +115,7 @@ export const ResultsMetrics: React.FC<ResultsMetricsProps> = ({
             <FeatureItem label="Shape" value={features.jawline.shape} />
             <FeatureItem
               label="Definition"
-              value={`${features.jawline.definition}/4`}
+              value={`${features.jawline.definition}/10`}
             />
           </div>
 

@@ -22,20 +22,21 @@ You never mention diseases.
 You never give medical advice or drug names.
 You always respond in JSON with a fixed schema.`;
 
-const USER_PROMPT = `Analyze the attached face image.
+const USER_PROMPT = `Analyze the attached face image(s).
 Provide cosmetic skin grading and facial feature description.
+If multiple images are provided, analyze them together as different angles/views of the same person.
 Use the following rules:
 
 * Skin metrics:
-  * wrinkles.grade integer from 0 to 4
-  * acne.grade integer from 0 to 4
-  * pigmentation.grade integer from 0 to 4
+  * wrinkles.grade integer from 0 to 10
+  * acne.grade integer from 0 to 10
+  * pigmentation.grade integer from 0 to 10
   * overall_score integer from 0 to 100
 
 * Features:
   * face_shape: one of "round", "oval", "square", "heart", "long"
   * jawline.shape: "soft", "angular", "round", "square"
-  * jawline.definition: integer from 0 to 4
+  * jawline.definition: integer from 0 to 10
   * nose.length: "short", "average", "long"
   * nose.width: "narrow", "average", "wide"
   * eyes.size: "small", "average", "large"
@@ -44,8 +45,9 @@ Use the following rules:
   * lips.fullness: "subtle", "medium", "full"
 
 * Text fields:
-  * description: 1–3 sentences with positive tone
-  * style_tips: list with 3 short styling tips
+  * description_positive: 3–5 sentences highlighting positive aspects and strengths
+  * description_negative: 3–5 sentences with constructive feedback on areas for improvement
+  * style_tips: list with 5 short styling tips
   * disclaimer: single sentence that reminds the user that this is cosmetic analysis only
 
 Respond with valid JSON that exactly matches this structure and key naming:
@@ -64,28 +66,34 @@ Respond with valid JSON that exactly matches this structure and key naming:
     "lips": { "fullness": "string" }
   },
   "text": {
-    "description": "string",
-    "style_tips": ["string", "string", "string"],
+    "description_positive": "string",
+    "description_negative": "string",
+    "style_tips": ["string", "string", "string", "string", "string"],
     "disclaimer": "string"
   }
 }
 
 Return ONLY the JSON object, no additional text or markdown formatting.`;
 
-export async function analyzeImage(imageBuffer: Buffer, mimeType: string): Promise<AnalysisResult> {
+export interface ImageInput {
+  buffer: Buffer;
+  mimeType: string;
+}
+
+export async function analyzeImage(images: ImageInput[]): Promise<AnalysisResult> {
   const model = getGenAI().getGenerativeModel({ 
     model: 'gemini-2.5-flash',
     systemInstruction: SYSTEM_MESSAGE
   });
 
-  const imagePart = {
+  const imageParts = images.map(image => ({
     inlineData: {
-      data: imageBuffer.toString('base64'),
-      mimeType: mimeType
+      data: image.buffer.toString('base64'),
+      mimeType: image.mimeType
     }
-  };
+  }));
 
-  const result = await model.generateContent([USER_PROMPT, imagePart]);
+  const result = await model.generateContent([USER_PROMPT, ...imageParts]);
   const response = await result.response;
   const text = response.text();
 

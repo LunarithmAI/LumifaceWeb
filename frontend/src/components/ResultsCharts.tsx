@@ -35,8 +35,8 @@ export const ResultsCharts: React.FC<ResultsChartsProps> = ({
   skin,
   features,
 }) => {
-  // Normalize overall_score from 0-100 to 0-4 scale for radar chart
-  const normalizedOverallScore = (skin.overall_score / 100) * 4;
+  // Normalize overall_score from 0-100 to 0-10 scale for radar chart
+  const normalizedOverallScore = (skin.overall_score / 100) * 10;
 
   const radarData = {
     labels: ['Wrinkles', 'Acne', 'Pigmentation', 'Overall Score'],
@@ -64,9 +64,9 @@ export const ResultsCharts: React.FC<ResultsChartsProps> = ({
     scales: {
       r: {
         beginAtZero: true,
-        max: 4,
+        max: 10,
         ticks: {
-          stepSize: 1,
+          stepSize: 2,
         },
         pointLabels: {
           font: {
@@ -87,7 +87,7 @@ export const ResultsCharts: React.FC<ResultsChartsProps> = ({
     labels: ['Wrinkles', 'Acne', 'Pigmentation', 'Jawline Definition'],
     datasets: [
       {
-        label: 'Grade (0-4)',
+        label: 'Grade (0-10)',
         data: [
           skin.wrinkles.grade,
           skin.acne.grade,
@@ -116,9 +116,9 @@ export const ResultsCharts: React.FC<ResultsChartsProps> = ({
     scales: {
       x: {
         beginAtZero: true,
-        max: 4,
+        max: 10,
         ticks: {
-          stepSize: 1,
+          stepSize: 2,
         },
       },
     },

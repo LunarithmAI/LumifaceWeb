@@ -12,12 +12,20 @@ export const ResultsComments: React.FC<ResultsCommentsProps> = ({ text }) => {
         Insights & Recommendations
       </h3>
 
-      {/* Description */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-        <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
-          Overview
+      {/* Positive Description */}
+      <div className="bg-green-50 rounded-lg p-6 shadow-sm border border-green-100">
+        <h4 className="text-sm font-medium text-green-600 uppercase tracking-wide mb-3">
+          Strengths
         </h4>
-        <p className="text-gray-700 leading-relaxed">{text.description}</p>
+        <p className="text-gray-700 leading-relaxed">{text.description_positive}</p>
+      </div>
+
+      {/* Negative Description */}
+      <div className="bg-amber-50 rounded-lg p-6 shadow-sm border border-amber-100">
+        <h4 className="text-sm font-medium text-amber-600 uppercase tracking-wide mb-3">
+          Areas for Improvement
+        </h4>
+        <p className="text-gray-700 leading-relaxed">{text.description_negative}</p>
       </div>
 
       {/* Style Tips */}
